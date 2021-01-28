@@ -2,12 +2,11 @@
 // ============================================================
 const mysql = require('mysql');
 const inquirer = require('inquirer');
-const { allowedNodeEnvironmentFlags } = require('process');
+const Department = require('./js/department');
 
 
 // CONNECT TO LOCAL DATABASE
 // ============================================================
-
 // Configure connection.
 const connection = mysql.createConnection({
   host: "localhost",
@@ -26,7 +25,6 @@ connection.connect(function(err) {
 
 // PROMPTS & QUERIES
 // ============================================================
-
 // Main menu prompts.
 function mainMenu() {
   inquirer.prompt({
