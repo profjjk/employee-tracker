@@ -3,6 +3,7 @@
 const connection = require('./connection');
 const inquirer = require('inquirer');
 const Department = require('./js/department');
+const Role = require('./js/role')
 
 
 // CONNECT TO DATABASE
@@ -36,11 +37,11 @@ function mainMenu() {
     ]
   }).then(function(userChoice) {
     switch (userChoice.action) {
-      case "ADD role":
-        addRole();
-        break;
       case "ADD department":
         addDept();
+        break;
+      case "ADD role":
+        addRole();
         break;
       case "ADD employee":
         addEmployee();
@@ -82,10 +83,34 @@ function addDept() {
   }).then(function(answer) {
     const dept = new Department(answer.name);
     dept.add();
+    mainMenu();
   })
+}
+function addRole() {
+
+}
+function addEmployee() {
+
 }
 
 // View departments, roles, and employees.
+function viewDepts() {
+  connection.query(`
+  SELECT * FROM departments`,
+  function(err, res) {
+    console.table(res)
+    mainMenu();
+  })
+}
+function viewRoles() {
+
+}
+function viewEmployees() {
+
+}
+function viewEmpManager() {
+
+}
 
 // Delete departments, roles, and employees.
 function deleteDept() {
@@ -96,7 +121,12 @@ function deleteDept() {
     }).then(function(answer) {
       const dept = new Department(answer.dept);
       dept.delete();
+      mainMenu();
   })
 }
+function deleteRole() {
 
-module.exports = connection;
+}
+function deleteEmp() {
+
+}
