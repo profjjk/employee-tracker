@@ -21,8 +21,11 @@ class Department {
       DELETE FROM departments
       WHERE name LIKE '${this.name}'`,
       function(err, res) {
-        if (err) throw err;
-        console.log("Department deleted.");
+        if (err) {
+          console.log("No department found by that name.")
+        } else {
+          console.log("Department deleted.");
+        }
       }
     )
   }

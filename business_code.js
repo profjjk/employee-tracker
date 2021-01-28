@@ -88,5 +88,15 @@ function addDept() {
 // View departments, roles, and employees.
 
 // Delete departments, roles, and employees.
+function deleteDept() {
+    inquirer.prompt({
+      name: "dept",
+      type: "input",
+      message: "Which department would you like to delete?",
+    }).then(function(answer) {
+      const dept = new Department(answer.dept);
+      dept.delete();
+  })
+}
 
 module.exports = connection;
