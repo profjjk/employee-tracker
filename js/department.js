@@ -1,3 +1,5 @@
+const connection = require('./../connection')
+
 class Department {
   constructor(name) {
     this.name = name

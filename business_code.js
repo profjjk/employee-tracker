@@ -1,22 +1,12 @@
 // DEPENDENCIES
 // ============================================================
-const mysql = require('mysql');
+const connection = require('./connection');
 const inquirer = require('inquirer');
 const Department = require('./js/department');
 
 
-// CONNECT TO LOCAL DATABASE
+// CONNECT TO DATABASE
 // ============================================================
-// Configure connection.
-const connection = mysql.createConnection({
-  host: "localhost",
-  port: 3306,
-  user: "root",
-  password: "password",
-  database: "business_db"
-})
-
-// Start connection & begin prompts.
 connection.connect(function(err) {
   if (err) throw err;
   mainMenu();
@@ -82,3 +72,21 @@ function mainMenu() {
     }
   })
 }
+
+// Add departments, roles, and employees.
+function addDept() {
+  inquirer.prompt({
+    name: "name",
+    type: "input",
+    message: "What would you like to name this department? "
+  }).then(function(answer) {
+    const dept = new Department(answer.name);
+    dept.add();
+  })
+}
+
+// View departments, roles, and employees.
+
+// Delete departments, roles, and employees.
+
+module.exports = connection;
