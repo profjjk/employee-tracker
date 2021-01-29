@@ -20,7 +20,7 @@ connection.connect(function(err) {
 function mainMenu() {
   console.log(
     `
- _______  __   __  _______      _______  _______  _______  ___   _______  _______ 
+  _______  __   __  _______      _______  _______  _______  ___   _______  _______ 
  |       ||  | |  ||       |    |       ||       ||       ||   | |       ||       |
  |_     _||  |_|  ||    ___|    |   _   ||    ___||    ___||   | |       ||    ___|
    |   |  |       ||   |___     |  | |  ||   |___ |   |___ |   | |       ||   |___ 
@@ -122,6 +122,11 @@ function addRole() {
   })
 }
 function addEmployee() {
+  connection.query(`
+  SELECT * FROM employees
+  WHERE manager_id NULL`,
+  function(err, results) {
+    if (err) throw err;
     inquirer.prompt([
       {
         name: "firstName",
@@ -139,15 +144,23 @@ function addEmployee() {
         message: "What is the new employee's role ID? ",
       },
       {
-        name: "manager",
-        type: "input",
+        name: "managerChoice",
+        type: "list",
         message: "What is the new employee's manager's ID? ",
+        choices: function() {
+          const managers = [];
+          for (let i = 0; i < results.length; i++) {
+            managers.push(`${results[i].first_name} ${results[i].last_name}`);
+          }
+          return managers;
+        }
       },
     ]).then(function(answers) {
       const employee = new Employee(answers.firstName, answers.lastName, answers.role, answers.manager);
       employee.add();
       mainMenu()
     })
+  });
 }
 
 // View departments, roles, and employees.
