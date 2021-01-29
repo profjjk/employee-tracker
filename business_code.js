@@ -3,7 +3,8 @@
 const connection = require('./connection');
 const inquirer = require('inquirer');
 const Department = require('./js/department');
-const Role = require('./js/role')
+const Role = require('./js/role');
+const Employee = require('./js/employee');
 
 
 // CONNECT TO DATABASE
@@ -110,7 +111,32 @@ function addRole() {
   })
 }
 function addEmployee() {
-
+    inquirer.prompt([
+      {
+        name: "firstName",
+        type: "input",
+        message: "What is the new employee's first name? "
+      },
+      {
+        name: "lastName",
+        type: "input",
+        message: "What is the new employee's last name? "
+      },
+      {
+        name: "role",
+        type: "input",
+        message: "What is the new employee's role ID? ",
+      },
+      {
+        name: "manager",
+        type: "input",
+        message: "What is the new employee's manager's ID? ",
+      },
+    ]).then(function(answers) {
+      const employee = new Employee(answers.firstName, answers.lastName, answers.role, answers.manager);
+      employee.add();
+      mainMenu()
+    })
 }
 
 // View departments, roles, and employees.
@@ -123,10 +149,20 @@ function viewDepts() {
   })
 }
 function viewRoles() {
-
+  connection.query(`
+  SELECT * FROM roles`,
+  function(err, res) {
+    console.table(res)
+    mainMenu();
+  })
 }
 function viewEmployees() {
-
+  connection.query(`
+  SELECT * FROM employees`,
+  function(err, res) {
+    console.table(res)
+    mainMenu();
+  })
 }
 function viewEmpManager() {
 
@@ -149,4 +185,32 @@ function deleteRole() {
 }
 function deleteEmp() {
 
+}
+
+function getDepts() {
+  connection.query(`
+  SELECT * FROM departments`,
+  function(err, res) {
+    return res;
+  }
+)
+}
+
+function getRoles() {
+  connection.query(`
+    SELECT * FROM roles`,
+    function(err, res) {
+      return res;
+    }
+  )
+}
+
+function getManagers() {
+  connection.query(`
+    SELECT * FROM employees
+    WHERE role_id = 1`,
+    function(err, res) {
+      return res;
+    }
+  )
 }
