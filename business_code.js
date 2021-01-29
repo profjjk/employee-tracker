@@ -2,9 +2,8 @@
 // ============================================================
 const connection = require('./connection');
 const inquirer = require('inquirer');
-const Department = require('./js/department');
-const Role = require('./js/role');
-const Employee = require('./js/employee');
+const { Department, Employee, Role } = require('./js/classes');
+const Table = require('cli-table');
 
 
 // CONNECT TO DATABASE
@@ -142,7 +141,8 @@ function addEmployee() {
 // View departments, roles, and employees.
 function viewDepts() {
   connection.query(`
-  SELECT * FROM departments`,
+  SELECT department_name AS Department 
+  FROM departments`,
   function(err, res) {
     console.table(res)
     mainMenu();
@@ -150,35 +150,42 @@ function viewDepts() {
 }
 function viewRoles() {
   connection.query(`
-  SELECT * FROM roles`,
+  SELECT title AS Title, salary AS Salary, department_id AS 'Department ID' 
+  FROM roles`,
   function(err, res) {
     console.table(res)
     mainMenu();
   })
 }
+
 function viewEmployees() {
   connection.query(`
-  SELECT * FROM employees`,
+  SELECT employees.id AS ID, first_name AS 'First Name', last_name AS 'Last Name', title AS Title, salary AS Salary, department_name AS Department, employees.manager_id AS 'Manager ID'
+  FROM employees
+  JOIN roles 
+    ON employees.role_id = roles.id 
+  JOIN departments
+    ON roles.department_id = departments.id
+  `,
   function(err, res) {
-    console.table(res)
+    console.table(res);
     mainMenu();
   })
 }
+
 function viewEmpManager() {
-  inquirer.prompt([
-    {
-      name: "manager",
-      type: "input",
-      message: "What is the manager's ID? "
-    }
-  ]).then(function(answer) {
-   connection.query(`
-   SELECT * FROM employees
-   WHERE manager_id = ${answer.manager}`,
-   function(err, res) {
-     console.table(res)
-     mainMenu();
-   })
+  inquirer.prompt({
+    name: "manager",
+    type: "input",
+    message: "Enter the manager's ID# to see employees: "
+  }).then(function(answer) {
+    connection.query(`
+    SELECT first_name AS 'First Name', last_name AS 'Last Name'
+    FROM employees
+    WHERE manager_id = ${answer.manager}`,
+    function(err, res) {
+      console.table(res);
+    })
   })
 }
 
@@ -203,36 +210,16 @@ function deleteRole() {
     const role = new Role(answer.role);
     role.delete();
     mainMenu();
-})
+  })
 }
 function deleteEmp() {
-
-}
-
-function getDepts() {
-  connection.query(`
-  SELECT * FROM departments`,
-  function(err, res) {
-    return res;
-  }
-)
-}
-
-function getRoles() {
-  connection.query(`
-    SELECT * FROM roles`,
-    function(err, res) {
-      return res;
-    }
-  )
-}
-
-function getManagers() {
-  connection.query(`
-    SELECT * FROM employees
-    WHERE role_id = 1`,
-    function(err, res) {
-      return res;
-    }
-  )
+  inquirer.prompt({
+    name: "employee",
+    type: "input",
+    message: "Which employee would you like to delete?",
+  }).then(function(answer) {
+    const employee = new Employee(answer.employee);
+    employee.delete();
+    mainMenu();
+  })
 }
