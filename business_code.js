@@ -186,9 +186,11 @@ function viewEmpManager() {
     function(err, res) {
       console.table(res);
     })
+    mainMenu();
   })
 }
 
+// DELETE
 function deleteDept() {
   connection.query(`SELECT * FROM departments`,
   function(err, results) {
@@ -242,27 +244,21 @@ function deleteRole() {
     })
   })
 }
-
+ 
 function deleteEmployee() {
   connection.query(`SELECT * FROM employees`,
   function(err, results) {
     if (err) throw err;
     inquirer.prompt({
-      name: "choice",
-      type: "rawlist",
-      message: "Which employee would you like to delete?",
-      choices: function() {
-        const employees = [];
-        for (let i = 0; i < results.length; i++) {
-          employees.push(results[i].first_name + " " + results[i].last_name);
-        }
-        return employees;
-      }
+      name: "id",
+      type: "input",
+      message: "What is the employee's ID#?",
     }).then(answer => {
       connection.query(`
       DELETE FROM employees
-      WHERE first_name AND last_name LIKE '${answer.choice}'`,
+      WHERE id = ${parseInt(answer.id)}`,
       function(err, res) {
+        if (err) {console.log("Employee not found.")}
         console.log("Employee deleted.");
       })
       mainMenu();
