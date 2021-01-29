@@ -195,7 +195,15 @@ function deleteDept() {
   })
 }
 function deleteRole() {
-
+  inquirer.prompt({
+    name: "role",
+    type: "input",
+    message: "Which role would you like to delete?",
+  }).then(function(answer) {
+    const role = new Role(answer.role);
+    role.delete();
+    mainMenu();
+})
 }
 function deleteEmp() {
 
