@@ -8,7 +8,7 @@ class Department {
     connection.query(`
       INSERT INTO departments SET ?`,
       {
-        name: `${this.name}`
+        department_name: `${this.name}`
       },
       function(err, res) {
         if (err) throw err;
@@ -54,7 +54,7 @@ class Role {
       {
         title: `${this.title}`,
         salary: `${this.salary}`,
-        dept: `${this.dept}`
+        department_id: `${this.dept}`
       },
       function(err, res) {
         if (err) throw err;

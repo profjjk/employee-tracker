@@ -68,7 +68,7 @@ function mainMenu() {
         deleteRole();
         break;
       case "DELETE employee":
-        deleteEmp();
+        deleteEmployee();
         break;
     }
   })
@@ -189,37 +189,83 @@ function viewEmpManager() {
   })
 }
 
-// Delete departments, roles, and employees.
 function deleteDept() {
+  connection.query(`SELECT * FROM departments`,
+  function(err, results) {
+    if (err) throw err;
     inquirer.prompt({
-      name: "dept",
-      type: "input",
+      name: "choice",
+      type: "list",
       message: "Which department would you like to delete?",
-    }).then(function(answer) {
-      const dept = new Department(answer.dept);
-      dept.delete();
+      choices: function() {
+        const departments = [];
+        for (let i = 0; i < results.length; i++) {
+          departments.push(results[i].department_name);
+        }
+        return departments;
+      }
+    }).then(answer => {
+      connection.query(`
+      DELETE FROM departments
+      WHERE department_name LIKE '${answer.choice}'`,
+      function(err, res) {
+        console.log("Department deleted.");
+      })
       mainMenu();
+    })
   })
 }
+
 function deleteRole() {
-  inquirer.prompt({
-    name: "role",
-    type: "input",
-    message: "Which role would you like to delete?",
-  }).then(function(answer) {
-    const role = new Role(answer.role);
-    role.delete();
-    mainMenu();
+  connection.query(`SELECT * FROM roles`,
+  function(err, results) {
+    if (err) throw err;
+    inquirer.prompt({
+      name: "choice",
+      type: "list",
+      message: "Which role would you like to delete?",
+      choices: function() {
+        const roles = [];
+        for (let i = 0; i < results.length; i++) {
+          roles.push(results[i].title);
+        }
+        return roles;
+      }
+    }).then(answer => {
+      connection.query(`
+      DELETE FROM roles
+      WHERE title LIKE '${answer.choice}'`,
+      function(err, res) {
+        console.log("Role deleted.");
+      })
+      mainMenu();
+    })
   })
 }
-function deleteEmp() {
-  inquirer.prompt({
-    name: "employee",
-    type: "input",
-    message: "Which employee would you like to delete?",
-  }).then(function(answer) {
-    const employee = new Employee(answer.employee);
-    employee.delete();
-    mainMenu();
+
+function deleteEmployee() {
+  connection.query(`SELECT * FROM employees`,
+  function(err, results) {
+    if (err) throw err;
+    inquirer.prompt({
+      name: "choice",
+      type: "rawlist",
+      message: "Which employee would you like to delete?",
+      choices: function() {
+        const employees = [];
+        for (let i = 0; i < results.length; i++) {
+          employees.push(results[i].first_name + " " + results[i].last_name);
+        }
+        return employees;
+      }
+    }).then(answer => {
+      connection.query(`
+      DELETE FROM employees
+      WHERE first_name AND last_name LIKE '${answer.choice}'`,
+      function(err, res) {
+        console.log("Employee deleted.");
+      })
+      mainMenu();
+    })
   })
 }
