@@ -19,10 +19,10 @@ class Department {
 }
 
 class Employee {
-  constructor(firstName, lastName, title, manager) {
+  constructor(firstName, lastName, roleID, manager) {
     this.firstName = firstName;
     this.lastName = lastName;
-    this.title = title;
+    this.roleID = roleID;
     this.manager = manager;
   }
   add() {
@@ -32,7 +32,8 @@ class Employee {
         first_name: `${this.firstName}`,
         last_name: `${this.lastName}`,
         role_id: `${this.roleID}`,
-        manager_id: getManager(this.manager)
+        manager_id: getManager(this.manager),
+        // manager_id: `${this.manager}`
       },
       function(err, res) {
         if (err) throw err;
@@ -40,20 +41,22 @@ class Employee {
       }
     )
   }
-  getManager(manager) {
-    connection.query(`
-    SELECT id FROM employees
-    WHERE CONCAT (first_name, ' ', last_name) LIKE '${manager}'`,
-    function(err, result) {
-      if (err) throw err;
-      return result
-    })
-  }
+  
+}
+
+function getManager(manager) {
+  connection.query(`
+  SELECT id FROM employees
+  WHERE CONCAT (first_name, ' ', last_name) LIKE '${manager}'`,
+  function(err, result) {
+    if (err) throw err;
+    return result
+  })
 }
 
 class Role {
-  constructor(title, salary, dept) {
-    this.title = title;
+  constructor(roleID, salary, dept) {
+    this.roleID = roleID;
     this.salary = salary;
     this.dept = dept;
   }
@@ -61,7 +64,7 @@ class Role {
     connection.query(`
       INSERT INTO roles SET ?`,
       {
-        title: `${this.title}`,
+        roleID: `${this.roleID}`,
         salary: `${this.salary}`,
         department_id: `${this.dept}`
       },

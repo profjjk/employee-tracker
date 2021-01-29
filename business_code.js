@@ -119,10 +119,10 @@ function addRole() {
     mainMenu();
   })
 }
+
 function addEmployee() {
   connection.query(`
-  SELECT * FROM employees
-  WHERE manager_id NULL`,
+  SELECT * FROM employees`,
   function(err, results) {
     if (err) throw err;
     inquirer.prompt([
@@ -272,44 +272,44 @@ function deleteRole() {
   })
 }
  
-// function deleteEmployee() {
-//   connection.query(`SELECT * FROM employees`,
-//   function(err, results) {
-//     if (err) throw err;
-//     inquirer.prompt({
-//       name: "id",
-//       type: "input",
-//       message: "What is the employee's ID#?",
-//     }).then(answer => {
-//       connection.query(`
-//       DELETE FROM employees
-//       WHERE id = ${parseInt(answer.id)}`,
-//       function(err, res) {
-//         if (err) {console.log("Employee not found.")}
-//         console.log("Employee deleted.");
-//       })
-//       mainMenu();
-//     })
-//   })
-// }
-
 function deleteEmployee() {
   connection.query(`SELECT * FROM employees`,
   function(err, results) {
     if (err) throw err;
     inquirer.prompt({
-      name: "choice",
-      type: "list",
-      message: "Which employee do you want to delete? ",
-      choices: function() {
-        const employees = [];
-        for (let i = 0; i < results.length; i++) {
-          // employees.push(results[i].first_name + " " + results[i].last_name);
-          employees.push({ name: results[i].first_name + " " + results[i].last_name, id: results[i].id });
-        }
-        return employees;
-      }
+      name: "id",
+      type: "input",
+      message: "What is the employee's ID#?",
     }).then(answer => {
+      connection.query(`
+      DELETE FROM employees
+      WHERE id = ${parseInt(answer.id)}`,
+      function(err, res) {
+        if (err) {console.log("Employee not found.")}
+        console.log("Employee deleted.");
+      })
+      mainMenu();
+    })
+  })
+}
+
+// function deleteEmployee() {
+//   connection.query(`SELECT * FROM employees`,
+//   function(err, results) {
+//     if (err) throw err;
+//     inquirer.prompt({
+//       name: "choice",
+//       type: "list",
+//       message: "Which employee do you want to delete? ",
+//       choices: function() {
+//         const employees = [];
+//         for (let i = 0; i < results.length; i++) {
+//           // employees.push(results[i].first_name + " " + results[i].last_name);
+//           employees.push({ name: results[i].first_name + " " + results[i].last_name, id: results[i].id });
+//         }
+//         return employees;
+//       }
+//     }).then(answer => {
 
       // connection.query(`
       // DELETE FROM employees
@@ -322,18 +322,18 @@ function deleteEmployee() {
       //   }
       // })
 
-      connection.query(`
-      DELETE FROM employees
-      WHERE id = ${parseInt(answer.choice.id)}`,
-      function(err, res) {
-        if (err) {
-          console.log("Didn't work.")
-        } else {
-          console.log("Employee deleted.");
-        }
-      })
+//       connection.query(`
+//       DELETE FROM employees
+//       WHERE id = ${parseInt(answer.choice.id)}`,
+//       function(err, res) {
+//         if (err) {
+//           console.log("Didn't work.")
+//         } else {
+//           console.log("Employee deleted.");
+//         }
+//       })
 
-      mainMenu();
-    })
-  })
-}
+//       mainMenu();
+//     })
+//   })
+// }
