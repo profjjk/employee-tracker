@@ -165,7 +165,21 @@ function viewEmployees() {
   })
 }
 function viewEmpManager() {
-
+  inquirer.prompt([
+    {
+      name: "manager",
+      type: "input",
+      message: "What is the manager's ID? "
+    }
+  ]).then(function(answer) {
+   connection.query(`
+   SELECT * FROM employees
+   WHERE manager_id = ${answer.manager}`,
+   function(err, res) {
+     console.table(res)
+     mainMenu();
+   })
+  })
 }
 
 // Delete departments, roles, and employees.
