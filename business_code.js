@@ -87,7 +87,27 @@ function addDept() {
   })
 }
 function addRole() {
-
+  inquirer.prompt([
+    {
+      name: "role",
+      type: "input",
+      message: "What is the title of role you would like to add? "
+    },
+    {
+      name: "salary",
+      type: "input",
+      message: "What is the salary for this role? "
+    },
+    {
+      name: "dept",
+      type: "input",
+      message: "What department will this role belong to? "
+    }
+  ]).then(function(answers) {
+    const role = new Role(answers.role, answers.salary, answers.dept);
+    role.add();
+    mainMenu();
+  })
 }
 function addEmployee() {
 
