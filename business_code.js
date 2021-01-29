@@ -10,14 +10,6 @@ const Table = require('cli-table');
 // ============================================================
 connection.connect(function(err) {
   if (err) throw err;
-  mainMenu();
-})
-
-
-// PROMPTS & QUERIES
-// ============================================================
-// Main menu prompts.
-function mainMenu() {
   console.log(
     `
  _______  __   __  _______      _______  _______  _______  ___   _______  _______ 
@@ -30,6 +22,14 @@ function mainMenu() {
  
    `
    )
+  mainMenu();
+})
+
+
+// PROMPTS & QUERIES
+// ============================================================
+// Main menu prompts.
+function mainMenu() {
   inquirer.prompt({
     name: "action",
     type: "rawlist",
