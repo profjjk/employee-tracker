@@ -1,6 +1,6 @@
 // DEPENDENCIES
 // ============================================================
-const connection = require('./connection');
+const connection = require('./js/connection');
 const inquirer = require('inquirer');
 const { Department, Employee, Role } = require('./js/classes');
 const Table = require('cli-table');
@@ -18,6 +18,18 @@ connection.connect(function(err) {
 // ============================================================
 // Main menu prompts.
 function mainMenu() {
+  console.log(
+    `
+ _______  __   __  _______      _______  _______  _______  ___   _______  _______ 
+ |       ||  | |  ||       |    |       ||       ||       ||   | |       ||       |
+ |_     _||  |_|  ||    ___|    |   _   ||    ___||    ___||   | |       ||    ___|
+   |   |  |       ||   |___     |  | |  ||   |___ |   |___ |   | |       ||   |___ 
+   |   |  |       ||    ___|    |  |_|  ||    ___||    ___||   | |      _||    ___|
+   |   |  |   _   ||   |___     |       ||   |    |   |    |   | |     |_ |   |___ 
+   |___|  |__| |__||_______|    |_______||___|    |___|    |___| |_______||_______|
+ 
+   `
+   )
   inquirer.prompt({
     name: "action",
     type: "rawlist",
@@ -160,7 +172,7 @@ function viewRoles() {
 
 function viewEmployees() {
   connection.query(`
-  SELECT employees.id AS ID, first_name AS 'First Name', last_name AS 'Last Name', title AS Title, salary AS Salary, department_name AS Department, employees.manager_id AS 'Manager ID'
+  SELECT employees.id AS ID, CONCAT (first_name, ' ', last_name) AS Name, title AS Title, salary AS Salary, department_name AS Department, employees.manager_id AS 'Manager ID'
   FROM employees
   JOIN roles 
     ON employees.role_id = roles.id 
@@ -188,6 +200,10 @@ function viewEmpManager() {
     })
     mainMenu();
   })
+}
+
+function updEmpManager() {
+  
 }
 
 // DELETE
@@ -245,22 +261,67 @@ function deleteRole() {
   })
 }
  
+// function deleteEmployee() {
+//   connection.query(`SELECT * FROM employees`,
+//   function(err, results) {
+//     if (err) throw err;
+//     inquirer.prompt({
+//       name: "id",
+//       type: "input",
+//       message: "What is the employee's ID#?",
+//     }).then(answer => {
+//       connection.query(`
+//       DELETE FROM employees
+//       WHERE id = ${parseInt(answer.id)}`,
+//       function(err, res) {
+//         if (err) {console.log("Employee not found.")}
+//         console.log("Employee deleted.");
+//       })
+//       mainMenu();
+//     })
+//   })
+// }
+
 function deleteEmployee() {
   connection.query(`SELECT * FROM employees`,
   function(err, results) {
     if (err) throw err;
     inquirer.prompt({
-      name: "id",
-      type: "input",
-      message: "What is the employee's ID#?",
+      name: "choice",
+      type: "list",
+      message: "Which employee do you want to delete? ",
+      choices: function() {
+        const employees = [];
+        for (let i = 0; i < results.length; i++) {
+          // employees.push(results[i].first_name + " " + results[i].last_name);
+          employees.push({ name: results[i].first_name + " " + results[i].last_name, id: results[i].id });
+        }
+        return employees;
+      }
     }).then(answer => {
+
+      // connection.query(`
+      // DELETE FROM employees
+      // WHERE first_name AND last_name LIKE '${answer.choice}'`,
+      // function(err, res) {
+      //   if (err) {
+      //     console.log("Didn't work.")
+      //   } else {
+      //     console.log("Employee deleted.");
+      //   }
+      // })
+
       connection.query(`
       DELETE FROM employees
-      WHERE id = ${parseInt(answer.id)}`,
+      WHERE id = ${parseInt(answer.choice.id)}`,
       function(err, res) {
-        if (err) {console.log("Employee not found.")}
-        console.log("Employee deleted.");
+        if (err) {
+          console.log("Didn't work.")
+        } else {
+          console.log("Employee deleted.");
+        }
       })
+
       mainMenu();
     })
   })
