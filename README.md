@@ -3,6 +3,7 @@
 ---
 ## Table of Contents
 * [Project Summary](#project-summary)
+* [Installation](#installation)
 * [Code Snippets](#code-snippets)
 * [Technologies Used](#technologies-used)
 * [How to Access](#how-to-access)
@@ -62,7 +63,8 @@ SELECT employees.id AS ID, CONCAT (first_name, ' ', last_name) AS Name, title AS
 * [MySQL](https://www.mysql.com/)
 
 ## How to Access
-[Note Taker - GitHub Page](https://github.com/profjjk/note-taker)
+* [Note Taker - GitHub Page](https://github.com/profjjk/note-taker)
+* [Demo Video](https://youtu.be/CeguxY2k2po)
 
 ## About Me
 * [LinkedIn](https://www.linkedin.com/in/the-real-jordan-kelly/)
