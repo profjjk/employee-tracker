@@ -19,10 +19,10 @@ class Department {
 }
 
 class Employee {
-  constructor(firstName, lastName, roleID, manager) {
+  constructor(firstName, lastName, role, manager) {
     this.firstName = firstName;
     this.lastName = lastName;
-    this.roleID = roleID;
+    this.role = role;
     this.manager = manager;
   }
   add() {
@@ -31,8 +31,8 @@ class Employee {
       {
         first_name: `${this.firstName}`,
         last_name: `${this.lastName}`,
-        role_id: `${this.roleID}`,
-        manager_id: getManager(this.manager),
+        role_id: `${this.role}`,
+        manager_id: `${this.manager}`,
         // manager_id: `${this.manager}`
       },
       function(err, res) {

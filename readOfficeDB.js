@@ -33,17 +33,16 @@ function mainMenu() {
     type: "rawlist",
     message: "What would you like to do?",
     choices: [
-      "ADD role",
-      "ADD department",
-      "ADD employee",
-      "VIEW departments",
-      "VIEW roles",
       "VIEW employees",
-      "VIEW employees by manager",
-      "UPDATE employee managers",
-      "DELETE department",
-      "DELETE role",
+      "ADD employee",
       "DELETE employee",
+      "VIEW departments",
+      "ADD department",
+      "DELETE department",
+      "VIEW roles",
+      "ADD role",
+      "DELETE role",
+      "UPDATE employee role", 
     ]
   }).then(function(userChoice) {
     switch (userChoice.action) {
@@ -65,11 +64,8 @@ function mainMenu() {
       case "VIEW employees":
         viewEmployees();
         break;
-      case "VIEW employees by manager":
-        viewEmpManager();
-        break;
-      case "UPDATE employee managers":
-        updEmpManager();
+      case "UPDATE employee role":
+        updateEmpRole();
         break;
       case "DELETE department":
         deleteDept();
@@ -216,27 +212,6 @@ function viewEmployees() {
   })
 }
 
-function viewEmpManager() {
-  inquirer.prompt({
-    name: "manager",
-    type: "input",
-    message: "Enter the manager's ID# to see employees: "
-  }).then(function(answer) {
-    connection.query(`
-    SELECT first_name AS 'First Name', last_name AS 'Last Name'
-    FROM employees
-    WHERE manager_id = ${answer.manager}`,
-    function(err, res) {
-      console.table(res);
-      mainMenu();
-    })
-  })
-}
-
-function updEmpManager() {
-  
-}
-
 // DELETE
 function deleteDept() {
   connection.query(`SELECT * FROM departments`,
@@ -293,9 +268,10 @@ function deleteRole() {
 }
  
 function deleteEmployee() {
-  connection.query(`SELECT * FROM employees`,
-  function(err, results) {
+  connection.query(`SELECT id AS ID, CONCAT (first_name, ' ', last_name) AS Name FROM employees`,
+  function(err, res) {
     if (err) throw err;
+    console.table(res)
     inquirer.prompt({
       name: "id",
       type: "input",
@@ -309,6 +285,39 @@ function deleteEmployee() {
         console.log("Employee deleted.");
       })
       mainMenu();
+    })
+  })
+}
+
+function updateEmpRole() {
+  connection.query(`
+  SELECT employees.id AS 'Employee ID', CONCAT (first_name, ' ', last_name) AS Name, title AS Title, roles.id AS 'Role ID' FROM employees
+  JOIN roles 
+    ON employees.role_id = roles.id`,
+  function(err, res) {
+    if (err) throw err;
+    console.table(res)
+    inquirer.prompt([
+      {
+        name: "id",
+        type: "input",
+        message: "What is the employee's ID#?",
+      },
+      {
+        name: "role",
+        type: "input",
+        message: "What is the employee's new role ID?",
+      }
+    ]).then(answer => {
+      connection.query(`
+      UPDATE employees
+      SET role_id = ${parseInt(answer.role)}
+      WHERE employees.id = ${parseInt(answer.id)}`,
+      function(err, res) {
+        if (err) {console.log("Employee not found.")}
+        console.log("Employee updated.");
+        mainMenu();
+      })
     })
   })
 }
