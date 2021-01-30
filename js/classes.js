@@ -40,23 +40,12 @@ class Employee {
         console.log("Employee added.");
       }
     )
-  }
-  
-}
-
-function getManager(manager) {
-  connection.query(`
-  SELECT id FROM employees
-  WHERE CONCAT (first_name, ' ', last_name) LIKE '${manager}'`,
-  function(err, result) {
-    if (err) throw err;
-    return result
-  })
+  } 
 }
 
 class Role {
-  constructor(roleID, salary, dept) {
-    this.roleID = roleID;
+  constructor(title, salary, dept) {
+    this.title = title;
     this.salary = salary;
     this.dept = dept;
   }
@@ -64,7 +53,7 @@ class Role {
     connection.query(`
       INSERT INTO roles SET ?`,
       {
-        roleID: `${this.roleID}`,
+        title: `${this.title}`,
         salary: `${this.salary}`,
         department_id: `${this.dept}`
       },

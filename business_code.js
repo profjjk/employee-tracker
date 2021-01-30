@@ -97,32 +97,45 @@ function addDept() {
   })
 }
 function addRole() {
-  inquirer.prompt([
-    {
-      name: "role",
-      type: "input",
-      message: "What is the title of role you would like to add? "
-    },
-    {
-      name: "salary",
-      type: "input",
-      message: "What is the salary for this role? "
-    },
-    {
-      name: "dept",
-      type: "input",
-      message: "What department will this role belong to? "
-    }
-  ]).then(function(answers) {
-    const role = new Role(answers.role, answers.salary, answers.dept);
-    role.add();
-    mainMenu();
+  connection.query(`
+  SELECT * FROM departments`,
+  function(err, results) {
+    if (err) throw err;
+    inquirer.prompt([
+      {
+        name: "role",
+        type: "input",
+        message: "What is the title of role you would like to add? "
+      },
+      {
+        name: "salary",
+        type: "input",
+        message: "What is the salary for this role? "
+      },
+      {
+        name: "dept",
+        type: "list",
+        message: "What department will this role belong to? ",
+        choices: function() {
+          const depts = [];
+          for (let i = 0; i < results.length; i++) {
+            depts.push({ name: results[i].department_name, value: results[i].id });
+          }
+          return depts;
+        }
+      }
+    ]).then(function(answers) {
+      const role = new Role(answers.role, answers.salary, answers.dept);
+      role.add();
+      mainMenu();
+    })
   })
 }
 
 function addEmployee() {
   connection.query(`
-  SELECT * FROM employees`,
+  SELECT * FROM employees
+  JOIN roles ON employees.role_id = roles.id;`,
   function(err, results) {
     if (err) throw err;
     inquirer.prompt([
@@ -138,17 +151,24 @@ function addEmployee() {
       },
       {
         name: "role",
-        type: "input",
-        message: "What is the new employee's role ID? ",
+        type: "list",
+        message: "What is the new employee's role? ",
+        choices: function() {
+          const roles = [];
+          for (let i = 0; i < results.length; i++) {
+            roles.push({ name: results[i].title, value: results[i].role_id });
+          }
+          return roles;
+        }
       },
       {
-        name: "managerChoice",
+        name: "manager",
         type: "list",
-        message: "What is the new employee's manager's ID? ",
+        message: "Who is the new employee's manager? ",
         choices: function() {
           const managers = [];
           for (let i = 0; i < results.length; i++) {
-            managers.push(`${results[i].first_name} ${results[i].last_name}`);
+            managers.push({ name: results[i].first_name + " " + results[i].last_name, value: results[i].id });
           }
           return managers;
         }
@@ -158,13 +178,13 @@ function addEmployee() {
       employee.add();
       mainMenu()
     })
-  });
+  })
 }
 
 // View departments, roles, and employees.
 function viewDepts() {
   connection.query(`
-  SELECT department_name AS Department 
+  SELECT id AS ID, department_name AS Department 
   FROM departments`,
   function(err, res) {
     console.table(res)
@@ -173,7 +193,7 @@ function viewDepts() {
 }
 function viewRoles() {
   connection.query(`
-  SELECT title AS Title, salary AS Salary, department_id AS 'Department ID' 
+  SELECT id AS ID, title AS Title, salary AS Salary, department_id AS 'Department ID' 
   FROM roles`,
   function(err, res) {
     console.table(res)
@@ -208,8 +228,8 @@ function viewEmpManager() {
     WHERE manager_id = ${answer.manager}`,
     function(err, res) {
       console.table(res);
+      mainMenu();
     })
-    mainMenu();
   })
 }
 
