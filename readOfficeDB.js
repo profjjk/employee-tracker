@@ -17,7 +17,8 @@ connection.connect(function(err) {
    |   |  |       ||    ___|    |  |_|  ||    ___||    ___||   | |      _||    ___|
    |   |  |   _   ||   |___     |       ||   |    |   |    |   | |     |_ |   |___ 
    |___|  |__| |__||_______|    |_______||___|    |___|    |___| |_______||_______|
-   ________________________________________________________________________________`)
+   ________________________________________________________________________________
+   `)
   mainMenu();
 })
 
@@ -128,7 +129,7 @@ function addRole() {
 
 function addEmployee() {
   connection.query(`
-  SELECT * FROM employees
+  SELECT employees.id AS employee_id, employees.first_name, employees.last_name, employees.manager_id, roles.id AS roleID, roles.title FROM employees
   JOIN roles ON employees.role_id = roles.id;`,
   function(err, results) {
     if (err) throw err;
@@ -148,9 +149,11 @@ function addEmployee() {
         type: "list",
         message: "What is the new employee's role? ",
         choices: function() {
-          const roles = [];
+          let roles = [];
           for (let i = 0; i < results.length; i++) {
-            roles.push({ name: results[i].title, value: results[i].role_id });
+            if (roles.map(role => role.name).indexOf(results[i].title) === -1) {
+              roles.push({ name: results[i].title, value: results[i].roleID });
+            }  
           }
           return roles;
         }
@@ -162,7 +165,7 @@ function addEmployee() {
         choices: function() {
           const managers = [];
           for (let i = 0; i < results.length; i++) {
-            managers.push({ name: results[i].first_name + " " + results[i].last_name, value: results[i].id });
+            managers.push({ name: results[i].first_name + " " + results[i].last_name, value: results[i].employee_id });
           }
           return managers;
         }
