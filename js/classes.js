@@ -19,11 +19,11 @@ class Department {
 }
 
 class Employee {
-  constructor(firstName, lastName, roleID, managerID) {
+  constructor(firstName, lastName, role, manager) {
     this.firstName = firstName;
     this.lastName = lastName;
-    this.roleID = roleID;
-    this.managerID = managerID;
+    this.role = role;
+    this.manager = manager;
   }
   add() {
     connection.query(`
@@ -31,15 +31,16 @@ class Employee {
       {
         first_name: `${this.firstName}`,
         last_name: `${this.lastName}`,
-        role_id: `${this.roleID}`,
-        manager_id: `${this.managerID}`
+        role_id: `${this.role}`,
+        manager_id: `${this.manager}`,
+        // manager_id: `${this.manager}`
       },
       function(err, res) {
         if (err) throw err;
         console.log("Employee added.");
       }
     )
-  }
+  } 
 }
 
 class Role {
